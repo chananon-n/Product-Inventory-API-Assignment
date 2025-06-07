@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Product_Inventory_API_Assignment.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250606183202_Init")]
-    partial class Init
+    [Migration("20250607185846_refreshToken")]
+    partial class refreshToken
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,10 +46,21 @@ namespace Product_Inventory_API_Assignment.Migrations
 
             modelBuilder.Entity("User", b =>
                 {
-                    b.Property<string>("UID")
+                    b.Property<Guid>("UID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

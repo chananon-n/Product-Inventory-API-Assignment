@@ -33,7 +33,7 @@ namespace Product_Inventory_API_Assignment.Migrations
                 {
                     UID = table.Column<string>(type: "TEXT", nullable: false),
                     Username = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false)
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,7 +47,7 @@ namespace Product_Inventory_API_Assignment.Migrations
             migrationBuilder.DropTable(
                 name: "Products");
 
-            migrationBuilder.DropTable( 
+            migrationBuilder.DropTable(
                 name: "Users");
         }
     }

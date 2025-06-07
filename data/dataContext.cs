@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 public class DataContext : DbContext
 {
 
