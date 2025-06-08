@@ -1,7 +1,4 @@
-
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 public class ProductService(DataContext context) : IProductService
 {
@@ -33,10 +30,10 @@ public class ProductService(DataContext context) : IProductService
     {
         var productLists = await context.Products.OrderBy(p => p.Name).ToListAsync();
 
-        if (productLists is null)
-        {
-            throw new ProductNotFoundException();
-        }
+        // if (productLists is null || productLists.Count == 0)
+        // {
+        //     throw new ProductNotFoundException("Product Not Found");
+        // }
         return productLists;
     }
 
@@ -45,7 +42,7 @@ public class ProductService(DataContext context) : IProductService
         var product = await context.Products.FindAsync(productID);
         if (product is null)
         {
-            throw new ArgumentException("Invalid product");
+            throw new ProductNotFoundException("Invalid product");
         }
         return product;
     }
@@ -55,7 +52,7 @@ public class ProductService(DataContext context) : IProductService
         var product = await context.Products.FindAsync(productID);
         if (product is null)
         {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Product Not Found");
         }
         if (product.CreatedDate < DateTime.UtcNow.AddDays(-7))
         {
@@ -74,7 +71,7 @@ public class ProductService(DataContext context) : IProductService
         var product = await context.Products.FindAsync(productID);
         if (product is null)
         {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Product Not Found");
         }
         context.Remove(product);
         await context.SaveChangesAsync();
@@ -89,7 +86,7 @@ public class ProductService(DataContext context) : IProductService
         productList = context.Products.Where(p => p.Name.ToLower().Contains(request.Name));
         if (productList is null)
         {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException("Product Not Found");
         }
 
         if (request.minQty < 0)
@@ -121,7 +118,7 @@ public class ProductService(DataContext context) : IProductService
     {
         await Task.Delay(2000);
 
-        var topProduct = await context.Products.OrderByDescending(p => p.Quantity).FirstOrDefaultAsync() ?? throw new ProductNotFoundException();
+        var topProduct = await context.Products.OrderByDescending(p => p.Quantity).FirstOrDefaultAsync() ?? throw new ProductNotFoundException("Product Not Found");
 
         // get all products
         IQueryable<Product> allProducts = context.Products;
@@ -142,16 +139,5 @@ public class ProductService(DataContext context) : IProductService
             TotalStock = totalStocks,
             TopProduct = topProductSummary
         };
-
-        
-
-
-
-
-
-
-
-
-
     }
 }

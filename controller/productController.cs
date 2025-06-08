@@ -39,13 +39,13 @@ public class ProductController(IProductService productService) : ControllerBase
             var productLists = await productService.GetAllProducts();
             return Ok(productLists);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
         catch (ProductNotFoundException pe)
         {
             return StatusCode(404, pe);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 
