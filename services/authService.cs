@@ -1,38 +1,37 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 
-public class AuthService(DataContext context, IConfiguration configuration) : IAuthService {
+public class AuthService(DataContext context, IConfiguration configuration) : IAuthService
+{
 
-    public async Task<User?> RegisterAsync(UserDto request) {
+    public async Task<User?> RegisterAsync(UserDto request)
+    {
 
-        if(await context.Users.AnyAsync(u => u.Username == request.Username))
+        if (await context.Users.AnyAsync(u => u.Username == request.Username.ToLower()))
         {
-            return null;
+            throw new ArgumentException("Username is already exists");
         }
 
         var user = new User();
         List<string> roles = new List<string>{
             "admin", "user"
         };
-        var hashedPassword = new PasswordHasher<User>().HashPassword(user,request.Password);
+        var hashedPassword = new PasswordHasher<User>().HashPassword(user, request.Password);
 
         user.UID = Guid.NewGuid();
         user.Username = request.Username.ToLower();
         user.PasswordHash = hashedPassword;
-        // if(!roles.Contains(request.Role.ToLower())){
-        //     user.Role = "";
-        // }
+        if (!roles.Contains(request.Role.ToLower()))
+        {
+            throw new ArgumentException("Invalid Role");
+        }
         user.Role = request.Role;
 
         context.Add(user);
@@ -47,14 +46,16 @@ public class AuthService(DataContext context, IConfiguration configuration) : IA
     {
 
         var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.Username.ToLower());
-        if (user is null) {
+        if (user is null)
+        {
 
-            return null;
+            throw new ArgumentException("Username does not exists");
         }
 
-        if(new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash,request.Password) == PasswordVerificationResult.Failed) {
-            
-            return null;
+        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
+        {
+
+           throw new ArgumentException("Password is wrong");
         }
 
         return await CreateTokenResponse(user);
@@ -63,9 +64,9 @@ public class AuthService(DataContext context, IConfiguration configuration) : IA
     public async Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request)
     {
         var user = await ValidateRefreshTokenAsync(request.UID, request.RefreshToken);
-        if(user is null )
+        if (user is null)
         {
-            return null;
+            throw new ArgumentException("Username does not exists");
 
         }
         return await CreateTokenResponse(user);
