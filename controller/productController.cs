@@ -130,10 +130,6 @@ public class ProductController(IProductService productService) : ControllerBase
             var productList = await productService.SearchProduct(request);
             return Ok(productList);
         }
-        catch (ProductNotFoundException ex)
-        {
-            return StatusCode(404, ex.Message);
-        }
         catch (ArgumentException ex)
         {
             return BadRequest(ex.Message);
@@ -151,10 +147,6 @@ public class ProductController(IProductService productService) : ControllerBase
         {
             var report = await productService.GenerateSummaryReport();
             return Ok(report);
-        }
-        catch (ProductNotFoundException ex)
-        {
-            return StatusCode(404, ex.Message);
         }
         catch (ArgumentException ex)
         {
