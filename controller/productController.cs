@@ -67,7 +67,7 @@ public class ProductController(IProductService productService) : ControllerBase
         }
         catch (ProductNotFoundException pe)
         {
-            return StatusCode(404, pe);
+            return StatusCode(404, pe.Message);
         }
     }
 

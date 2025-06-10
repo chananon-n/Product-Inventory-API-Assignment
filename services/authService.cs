@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 
 public class AuthService(DataContext context, IConfiguration configuration) : IAuthService
 {
-    private DataContext context;
+    // private DataContext context;
 
     public async Task<User?> RegisterAsync(UserDto request)
     {
